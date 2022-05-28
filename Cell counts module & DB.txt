@@ -1,0 +1,36 @@
+{ CELL COUNT DB }--------------------------------------------------------------------------------
+
+[]	Automatic backup
+	|_ Loction: 
+	|_ View only
+	|_ ...
+
+[]	Update from csv
+	|_ recognition of csv file name
+	|_ count number of new counts since last update
+	|_ add necessery amount of new rows
+	\_ write data
+		|_convert E to mvc/mL
+
+{ CELL MONITORING }------------------------------------------------------------------------------
+
+[]	Read experiment date / dates
+		|_ 	import datetime
+		|  	v = "23.05.2022  15:04:00"
+		|  	d = datetime.datetime.strptime(v, '%d.%m.%Y %H:%M:%S')
+		|_ ...
+[]	Connect to DB
+		|_ os.path.exists()
+		|_ ...
+[]	Create headers dict {name: col_num}
+[]	Collect plasmid IDs to scan:
+		|_ ? {(Plasmid ID, Cell line, Conditions): (date, data)}
+		|_ ? (Cell, line, Plasmid ID, Secondary name, [Dates], []data)
+[]	Iterate over dates in given range +/- margin?
+[]	if plasmid_id in plasmids:
+		|_ pladmids[plasmid_id] = row[range] 		??? dict or list ???
+[]	break when date beyond range
+[]	write data to template
+
+??	One plasmid in different conditions
+??	Different sets in one file?
