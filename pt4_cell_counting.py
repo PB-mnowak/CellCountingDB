@@ -1,6 +1,6 @@
 import pandas as pd
 from copy import copy
-from os import listdir, getcwd
+from os import listdir, getcwd, system, sep
 from os.path import exists, join
 from datetime import datetime
 from openpyxl import load_workbook
@@ -8,12 +8,14 @@ from openpyxl import load_workbook
 
 def main():
     
+    system('cls')
     new_rows = 0
     
-    db_path = r'C:\Users\m.nowak\Desktop\Python\_PT4\PT4_cell_counting'
+    db_path = r'P:\_research group folders\PT Proteins\PT4\_PT4_cell_counting'
     db_name = 'Cell counts - DB.xlsx'
     db_full_path = join(db_path, db_name)
     if not db_check(db_full_path):
+        print('---< Database file not found >---'.center(80))
         return None
     
     file_path = getcwd()
@@ -24,6 +26,7 @@ def main():
         df = import_data(file_full_path, last_date)
         if df.shape[0] > 0:
             new_rows = update_db(db_full_path, df)
+        transfer_csv(file_full_path)
             
     update_status(new_rows)
 
@@ -56,10 +59,17 @@ def this_year():
     date_format = '%Y'
     return datetime.strftime(now, date_format)
 
+def extract_date(filename):
+    file_date = filename.strip('.csv')
+    file_date = file_date.split('_')[-1]
+    file_date = file_date.replace(' (', '.')
+    file_date = file_date.strip(')')
+    return float(file_date)
+
 def select_latest_csv(file_path):
     csv_list = [file for file in listdir(file_path) if file.endswith('.csv')]
     if csv_list:
-        return max(csv_list, key=lambda x: int(x.strip('.csv').split('_')[-1]))
+        return max(csv_list, key=lambda x: extract_date(x))
 
 def import_data(file_full_path, last_date):
     with open(file_full_path) as file:
@@ -124,6 +134,7 @@ def fill_cell(sheet, i, header, cell_formats, num_formats, align_formats, df, ne
                     db_cell.value = csv_value
                 db_cell.number_format = num_formats[col]
                 db_cell.alignment = align_formats[col]
+                db_cell.hyperlink = None
 
 def update_status(new_rows):
     print(f'{new_rows} new records added')
@@ -145,7 +156,11 @@ def update_db(db_full_path, df):
     wb.close()
     return new_rows
 
-
+def transfer_csv(file_full_path):
+    csv_folder = r'P:\_research group folders\PT Proteins\PT4\_PT4_cell_counting\CSV files'
+    if exists(csv_folder):
+        system(f'move {file_full_path} "{csv_folder}\\" >nul')
+        print(f'{file_full_path.split(sep)[-1]} transferred to PB_all')
 
 if __name__ == '__main__':
     main()
